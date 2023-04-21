@@ -1,0 +1,25 @@
+#cesiumContainer{
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.menu-show {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  width: 330px;
+  height: calc(100% - 121px);
+  background-color: #f0f0f0;
+  transition: left .3s ease-in-out;
+}
+
+.menu-hide {
+  position: absolute;
+  top: 50px;
+  left: -200px;
+  width: 200px;
+  height: calc(100% - 50px);
+  background-color: #f0f0f0;
+  transition: left .3s ease-in-out;
+}
