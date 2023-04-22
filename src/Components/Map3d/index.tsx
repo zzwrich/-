@@ -279,7 +279,7 @@ class CesiumViewer extends React.Component {
 		];
 
 		return (
-			<div id="main">
+			<div id="main" style={{ position: 'relative' }}>
 				<div id="cesiumContainer" className="cesiumContainer"></div>
 				<div id="menu-container" className={isShow ? 'menu-show' : 'menu-hide'}>
 					<Scrollbar>
@@ -302,17 +302,41 @@ class CesiumViewer extends React.Component {
 						</Menu>
 					</Scrollbar>
 				</div>
-				<div className="nav-menu">
-					<label htmlFor="czmlFileInput">
-						选择CZML文件
-						<input
-							type="file"
-							id="czmlFileInput"
-							accept=".czml"
-							onChange={this.handleCzmlFileChange}
+				<div className="nav-menu" style={{ display: 'flex', alignItems: 'center',position: 'absolute', top: 0, left: 0 }}>
+					<div style={{ position: 'relative', top: 0}}>
+						<img
+							src="./pic/upload.png"
+							alt="选择图片"
+							title="选择图片"
+							style={{
+								position: 'absolute',
+								top: '30px',
+								left: '1400px',
+								zIndex: 1,
+								cursor: 'pointer',
+								width: '35px',
+								height: '35px',
+							}}
+							onClick={() => document.getElementById('dcmfile').click()}
 						/>
-					</label>
-					<Button className="nav-menu-btn" onClick={this.toggleNavMenu} style={{ position: 'absolute', top: '5px', left: '5px' }}>
+						<input
+							className="choosefile"
+							type="file"
+							id="dcmfile"
+							onChange={this.handleCzmlFileChange}
+							style={{
+								position: 'absolute',
+								zIndex: 9,
+								top: '0px',
+								left: '5px',
+								width: '100%',
+								height: '100%',
+								opacity: 0,
+								cursor: 'pointer',
+							}}
+						/>
+					</div>
+					<Button className="nav-menu-btn" onClick={this.toggleNavMenu} style={{ marginLeft: '5px',marginTop:'5px' }}>
 						{isShow ? '收起' : '展开'}
 					</Button>
 				</div>
@@ -322,4 +346,3 @@ class CesiumViewer extends React.Component {
 }
 
 export default CesiumViewer;
-
