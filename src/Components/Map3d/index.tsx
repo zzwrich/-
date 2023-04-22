@@ -23,6 +23,8 @@ class CesiumViewer extends React.Component {
 	state = {
 		//筛选得到的实体ID
 		filterId: [],
+		//选择的czml文件
+		czmlData: null,
 		//是否展示菜单栏
 		isShow: false,
 		//选择展示的卫星类型
@@ -82,58 +84,27 @@ class CesiumViewer extends React.Component {
 		});
 	}
 
-	handleFileSelect(event) {
-		const file = event.target.files[0];
-		//存放实体名称信息
-		const filterId: string[] = [];
-		if (file) {
-			console.log("file", file)
+	// 处理选择本地czml文件事件
+	handleCzmlFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
+		console.log("files", files)
+		if (files && files.length > 0) {
 			const reader = new FileReader();
-			console.log("Reader", reader)
+			reader.readAsText(files[0]);
+			console.log(reader)
 			reader.onload = () => {
-				console.log("钟梓文")
-				const czml = reader.result;
-				console.log("czml", czml)
-				Cesium.CzmlDataSource.load(czml).then((dataSource: any) => {
-					this.viewer.dataSources.add(dataSource);
-					this.entities = dataSource.entities;
-
-					for (let i = 0; i < this.entities.values.length; i++) {
-						const entity = this.entities.values[i];
-						const idArr = entity.id.split('/')
-						if (idArr.length == 2 && idArr[0] == "Satellite") {
-							//修改description内容
-							if (entity.description?._value) {
-								const noradId = idArr[1].split('_').at(-1)
-								entity.description._value = getSatelliteDescription(noradId)
-							}
-							// const positions = entity.position?.getValue(Cesium.JulianDate.now());
-							// console.log(positions)
-							filterId.push(entity.id)
-							//初始时全部显示
-							if (entity.id.indexOf("GPS") !== -1) {
-								entity.show = this.state.showGPS;
-							}
-							if (entity.id.indexOf("BEIDOU") !== -1) {
-								entity.show = this.state.showBEIDOU
-							}
-							if (entity.id.indexOf("STARLINK") !== -1) {
-								entity.show = this.state.showSTARLINK;
-							}
-						}
-					}
-				}).otherwise((error) => {
-					console.log(error);
-				});
-				this.setState({
-					filterId
-				});
-			}
-			reader.readAsDataURL(file);
-
+				const czmlData = JSON.parse(reader.result);
+				this.setState({ czmlData });
+				console.log(czmlData)
+				// 载入czml数据
+				const dataSource = Cesium.CzmlDataSource.load(czmlData);
+				console.log(typeof czmlData)
+				console.log(dataSource)
+				this.viewer.dataSources.removeAll();
+				this.viewer.dataSources.add(dataSource);
+			};
 		}
 	}
-
 	// 切换导航菜单展开/收起状态
 	toggleNavMenu = () => {
 		this.setState({
@@ -332,7 +303,15 @@ class CesiumViewer extends React.Component {
 					</Scrollbar>
 				</div>
 				<div className="nav-menu">
-					<input type="file" onChange={this.handleFileSelect} />
+					<label htmlFor="czmlFileInput">
+						选择CZML文件
+						<input
+							type="file"
+							id="czmlFileInput"
+							accept=".czml"
+							onChange={this.handleCzmlFileChange}
+						/>
+					</label>
 					<Button className="nav-menu-btn" onClick={this.toggleNavMenu} style={{ position: 'absolute', top: '5px', left: '5px' }}>
 						{isShow ? '收起' : '展开'}
 					</Button>
